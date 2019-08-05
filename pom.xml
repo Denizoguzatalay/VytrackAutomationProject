@@ -11,27 +11,27 @@
 
 
 
-<!--    <build>-->
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-compiler-plugin</artifactId>-->
-<!--                <configuration>-->
-<!--                    <source>7</source>-->
-<!--                    <target>7</target>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
-<!--    </build>-->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>10</source>
+                    <target>10</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 
 
 
 
-    <properties>
-        <maven.compiler.source>11.0.2</maven.compiler.source>
-        <maven.compiler.target>11.0.2</maven.compiler.target>
-    </properties>
+<!--    <properties>-->
+<!--        <maven.compiler.source>11.0.2</maven.compiler.source>-->
+<!--        <maven.compiler.target>11.0.2</maven.compiler.target>-->
+<!--    </properties>-->
 
 
 
@@ -56,6 +56,12 @@
             <artifactId>testng</artifactId>
             <version>6.13.1</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.aventstack</groupId>
+            <artifactId>extentreports</artifactId>
+            <version>4.0.6</version>
         </dependency>
     </dependencies>
 

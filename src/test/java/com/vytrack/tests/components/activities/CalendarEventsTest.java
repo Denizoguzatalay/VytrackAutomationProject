@@ -19,7 +19,7 @@ import java.util.Random;
 
 public class CalendarEventsTest extends TestBase {
 
-
+    /// 1) Date Time, End date auto adjust
     @Test
     public void CalenderEventsTests1() {
 
@@ -48,6 +48,7 @@ public class CalendarEventsTest extends TestBase {
     }
 
 
+    //2) Date Time, End time auto adjust
     @Test
     public void CalenderEventsTests2() {
 
@@ -89,6 +90,7 @@ public class CalendarEventsTest extends TestBase {
     }
 
 
+    //    3) Date Time, End date/time auto adjust
     @Test
     public void CalenderEventsTests3() {
 
@@ -129,7 +131,7 @@ public class CalendarEventsTest extends TestBase {
 
 
 //////////////////////////////////////////////////////////////////////////////
-
+    //    Daily Repeat Tests
 
     //1)Daily repeat option, Repeat every, summary
     @Test
@@ -197,15 +199,16 @@ public class CalendarEventsTest extends TestBase {
         cep.untilRepeatCheckBox();
 
         //5.Test the day(s) input entering different values(boundary value analysis)
-        cep.boundryValue("30");
-        cep.boundryValue("10");
-        cep.boundryValue("97");
+        cep.boundryValueRepeatEvery("30");
+        cep.boundryValueRepeatEvery("10");
+        cep.boundryValueRepeatEvery("97");//more than 99. occur when values are too big or small
 
-        //6.Verify error messages The value have not to be less than 1.
-        cep.boundryValue("0");
+        //6. Verify error messages The value have not to be less than 1. and The value have not to be
+        cep.boundryValueRepeatEvery("0");
 
-//    andThe value have not to be more than 99.occur when values are too big or small
-//    7.Verify that error messages disappear when valid values are enter
+        //7. Verify that error messages disappear when valid values are entered
+        cep.boundryValueRepeatEvery("30");
+        Assert.assertTrue(cep.boundyValueAttentionRepeatEvery.getText().equals(""));
 
 
     }
@@ -224,10 +227,10 @@ public class CalendarEventsTest extends TestBase {
 
         //5.Enter random value to the day(s) field
         //6.Verify that Summary says Daily every<random number>day
-        cep.randomValue();
+        cep.repeatEveryDaySummaryNotes();
         //7.Enter another random value to the day(s) field
         //8.Verify that Summary updated withDaily every<random number>day
-        cep.randomValue();
+        cep.repeatEveryDaySummaryNotes();
 
     }
 
@@ -248,9 +251,9 @@ public class CalendarEventsTest extends TestBase {
         //5. Clear the value of the day(s) field
         cep.repeatEveryLocator.clear();
         //6. Message This value should not be blank. should come up
-        System.out.println(cep.boundyValueAttention.getText());
+        System.out.println(cep.boundyValueAttentionRepeatEvery.getText());
         String expected="This value should not be blank.";
-        Assert.assertEquals(cep.boundyValueAttention.getText(), expected);
+        Assert.assertEquals(cep.boundyValueAttentionRepeatEvery.getText(), expected);
 
         //7. Enter a valid value to the day(s) field the
         int num = (int) (Math.random() * 100 + 1);
@@ -258,25 +261,31 @@ public class CalendarEventsTest extends TestBase {
         BrowserUtils.sendKeys(Driver.getDriver(),cep.repeatEveryLocator, 10, n);
         cep.repeatEveryLocator.click();
 
-//!!!!!!!!!!!!!!8. Message This value should not be blank. should disappear
-        try {
-           cep.boundyValueAttention.isDisplayed();
-            System.out.println("Failed");
-        }
-        catch (NoSuchElementException e) {
-            System.out.println("passed");
-        }
-        //Assert.assertFalse(cep.boundyValueAttention.getText().equals(expected));
+        //8. Message This value should not be blank. should disappear
+       // Assert.assertTrue(cep.boundyValueAttentionRepeatEvery.getText().equals(""));
 
-        BrowserUtils.waitPlease(3);
         //9. Clear the value of the After occurrences field
-        cep.repeatEveryLocator.clear();
+        cep.afterOccurenceLocator.click();
+        BrowserUtils.sendKeys(Driver.getDriver(),cep.afterOccurenceLocator,10 ,"67");
+        cep.afterOccurenceLocator.clear();
+
 
         //10. Message This value should not be blank. should come up
+        SeleniumUtils.waitPlease(3);
+        System.out.println(cep.boundyValueAttentionAfterOccurences.getText());
+        Assert.assertEquals(cep.boundyValueAttentionAfterOccurences.getText(),"This value should not be blank.");
 
-        // 11. Enter a valid value to the After occurrences field the
+
+        //11. Enter a valid value to the After occurrences field the
+        int num1 = (int) (Math.random() * 1000+ 1);
+        String n1 = num1 + "";
+        BrowserUtils.sendKeys(Driver.getDriver(),cep.afterOccurenceLocator,10 ,n1);
+
 
         //12. Message This value should not be blank. should disappear
+        BrowserUtils.waitPlease(3);
+        Assert.assertTrue(cep.boundyValueAttentionAfterOccurences.getText().equals(""));
+
 
     }
 
@@ -295,12 +304,14 @@ public class CalendarEventsTest extends TestBase {
         //5. Test the After occurrences input entering different values (boundary value analysis)
         //6. Verify error messages The value have not to be less than 1. and
         // The value have not to be  more than 99. occur when values are too big or small
-        cep.boundryValue("0");
-        cep.boundryValue("1");
-        cep.boundryValue("99");
-        cep.boundryValue("100");
+        cep.boundryValueRepeatEvery("0");
+        cep.boundryValueRepeatEvery("1");
+        cep.boundryValueRepeatEvery("99");
+        cep.boundryValueRepeatEvery("100");
 
         //7. Verify that error messages disappear when valid values are entered
+        cep.boundryValueRepeatEvery("56");
+        Assert.assertTrue(cep.boundyValueAttentionRepeatEvery.getText().equals(""));
     }
 
 
@@ -327,54 +338,4 @@ public class CalendarEventsTest extends TestBase {
 //
 
 
-        //Date andTimeTests
-
-//    1.Log in as Valid user
-//    2.Go to Activities -> Calendar Events
-//    3.Click on create new calendar event
-//    4.Change the start date to future date
-//    5.Verify that end date changes to the same date
-//    6.Change back the start date to today’s date
-//    7.Verify that end date changes back to today’s date
-
-
-//    1Log in as Valid user
-//    2.Go to Activities -> Calendar Events
-//    3.Click on create new calendar event
-//    4.Change the start time to any other time
-//    5.Verify that end time changes exactly 1 hours later
-
-
-//    Log in as Valid user
-//    2.Go to Activities -> Calendar Events
-//    3.Click on create new calendar event
-//    4.Change the start time to 11.30 PM
-//    5.Verify that end date shows tomorrows date
-//    6.Verify that end time is 12:30 AM
-
-
-        // Daily Repeat Tests
-
-//1. Log in as Valid user
-//2. Go to Activities -> Calendar Events
-//3. Click on create new calendar event
-//4. Click on Repeat checkbox
-//5. Verify that Daily is selected by default
-//6. Verify day(s) checkbox is selected and default value is 1
-//7. Verify summary says Daily every 1 day
-//8. Check the weekday checkbox
-//9. Verify that days input now disabled
-//10. Verify summary says Daily every weekday
-
-
-//    3)Daily repeat option, Repeat everyday(s), error messages
-//    1.Log in as Valid user
-//    2.Go to Activities -> Calendar Events
-//    3.Click on create new calendar event
-//    4.Click on Repeat checkbox
-//    5.Test the day(s) inputentering different values(boundary value analysis)
-//    6.Verify error messagesThe value have not to be less than 1.
-//    andThe value have not to be more than 99.occur when values are too big or small
-//    7.Verify that error messages disappear when valid values are entere
-
-    }}
+          }}

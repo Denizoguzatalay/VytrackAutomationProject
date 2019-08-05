@@ -7,6 +7,7 @@ import com.vytrack.utilities.Driver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.CacheLookup;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.Select;
@@ -50,7 +51,7 @@ public class CalendarEventsPage {
 
 
     @FindBy(css = "select[id^='recurrence-repeats-view']")
-    public WebElement repeatsDailyDropdownLocator;
+    public WebElement repeatsDailyDropdownLocator;// repeatsDropdownLocator
 
 
     @FindBy(css = "label[class='fields-row']>input[checked='checked']")
@@ -67,10 +68,17 @@ public class CalendarEventsPage {
     public WebElement summaryLocator;//EN ALLTTAKI TEXT MESSAGE
 
     @FindBy(xpath = "//label[@data-role='control-section-switcher']//span[contains(text(),'Weekday')]")
-    public WebElement weekdayRadioButtonLocator;
+    public WebElement weekdayRadioButtonLocator;//weekdayLocator
 
-    @FindBy(css = ".validation-failed>span>span")//POP UP MESSAGE
-    public WebElement boundyValueAttention;
+
+    @FindBy(css="label[class='fields-row']>input[data-related-field='occurrences']")
+    public WebElement afterOccurenceLocator;
+
+    @FindBy(xpath = "/html[1]/body[1]/div[2]/div[2]/div[1]/div[2]/div[3]/form[1]/div[2]/div[2]/div[1]/div[1]/div[2]/div[1]/fieldset[1]/div[2]/div[2]/div[2]/div[6]/div[1]/div[2]/div[2]/span[1]" )
+    public WebElement boundyValueAttentionAfterOccurences;
+
+    @FindBy(xpath = "//span[@class='validation-failed']")
+    public WebElement boundyValueAttentionRepeatEvery;
 
 
 
@@ -98,13 +106,14 @@ public class CalendarEventsPage {
     }
 
 
+    //WITH THAT METHOD WE WILL PICK ANY START TIME
     public void pickStartTime(String am_pm, String time) {
         BrowserUtils.waitForPageToLoad(20);
         BrowserUtils.clickWithJS(startTimeLocator);
         WebElement startTime = Driver.getDriver().findElement(By.xpath("//li[@class='ui-timepicker-" + am_pm + "'][text()='" + time + "']"));
         BrowserUtils.waitForClickablility(startTime, 20).click();
     }
-
+    //WITH THAT METHOD WE WILL PICK ANY END TIME
     public void pickEndingTime(String am_pm, String time) {
         BrowserUtils.waitForPageToLoad(20);
         BrowserUtils.waitPlease(3);
@@ -114,6 +123,8 @@ public class CalendarEventsPage {
         BrowserUtils.waitForClickablility(endTime, 20).click();
     }
 
+
+    //WE WILL GET ANY REPEAT OPTION FROM DROPDOWN
 
     public List<String> getRepeatOptions() {
         //we crated select object to work with dropdown
@@ -132,6 +143,7 @@ public class CalendarEventsPage {
     }
 
 
+    //IT TAKES FROM FIRST STEP TO REPEAT CHECK BOX
     public void untilRepeatCheckBox() {
 
         LoginPage loginpage = new LoginPage();
@@ -146,35 +158,53 @@ public class CalendarEventsPage {
     }
 
 
-    public void boundryValue(String value) {
-        // BrowserUtils.waitForPageToLoad(10);
+    //WE GIVE A ONE NUMBER AS STRING AND IT CHECK THE ATTENTION BOX TEXT
+    //IT IS A BOUNDRY VALUE TEST
+    public void boundryValueRepeatEvery(String value) {
+        BrowserUtils.waitForPageToLoad(10);
         repeatEveryLocator.clear();
-        BrowserUtils.waitPlease(2);
         BrowserUtils.sendKeys(Driver.getDriver(), repeatEveryLocator, 5, value);
         int val = Integer.parseInt(value);
-
         if (val < 1 || val > 99) {
-            System.out.println(boundyValueAttention.getText());
+            System.out.println(boundyValueAttentionRepeatEvery.getText());
             if (val < 1) {
-                Assert.assertTrue(boundyValueAttention.getText().equals("The value have not to be less than 1."));
+                Assert.assertTrue(boundyValueAttentionRepeatEvery.getText().equals("The value have not to be less than 1."));
             } else {
-                Assert.assertTrue(boundyValueAttention.getText().equals("The value have not to be more than 99."));
+                Assert.assertTrue(boundyValueAttentionRepeatEvery.getText().equals("The value have not to be more than 99."));
             }
         } else {
             System.out.println(repeatEveryLocator.getAttribute("value"));
             Assert.assertTrue(Integer.parseInt(repeatEveryLocator.getAttribute("value")) == val);
         }
-
     }
 
-//This method cehck summary box woth valid random values
-    public void randomValue(){
-        BrowserUtils.waitFor(3);
+    //CHECK AFTER THE ENTER ANY NUMBER "For Repeat Every Box" HOW CHANGE THE SUMMARY BOX
+    public void repeatEveryDaySummaryNotes(){
+        //     BrowserUtils.waitFor(3);
         int num = (int) (Math.random() * 100 + 1);
         String n = num + "";
         repeatEveryLocator.clear();
         BrowserUtils.sendKeys(Driver.getDriver(),repeatEveryLocator, 10, n);
         repeatEveryLocator.click();
+        BrowserUtils.waitFor(3);
+        String expected ="";
+        if(n.equals("1")){
+            expected.contains("Daily every"+n+" day");
+        }else{
+            expected = "Daily every "+n+" days";
+        }
+        System.out.println(summaryLocator.getText());
+        Assert.assertEquals(summaryLocator.getText(), expected);
+    }
+
+    //CHECK AFTER THE ENTER ANY NUMBER "For after Occurence Box" HOW CHANGE THE SUMMARY BOX
+    public void afterOccurencesSummaryNotes(){
+        //     BrowserUtils.waitFor(3);
+        int num = (int) (Math.random() * 1000 + 1);
+        String n = num + "";
+        afterOccurenceLocator.clear();
+        BrowserUtils.sendKeys(Driver.getDriver(),afterOccurenceLocator, 10, n);
+        afterOccurenceLocator.click();
         BrowserUtils.waitFor(3);
         String expected ="";
         if(n.equals("1")){
@@ -186,7 +216,24 @@ public class CalendarEventsPage {
         Assert.assertEquals(summaryLocator.getText(), expected);
     }
 
-
+    //WE GIVE A ONE NUMBER AS STRING AND IT CHECK THE "after Occurence Box" TEXT
+    //IT IS A BOUNDRY VALUE TEST
+    public void afterOccurencesBoundryValue(String value) {
+        afterOccurenceLocator.clear();
+        BrowserUtils.sendKeys(Driver.getDriver(), afterOccurenceLocator, 5, value);
+        int val = Integer.parseInt(value);
+        if (val < 1 || val > 999) {
+            System.out.println(boundyValueAttentionRepeatEvery.getText());
+            if (val < 1) {
+                Assert.assertTrue(boundyValueAttentionRepeatEvery.getText().equals("The value have not to be less than 1."));
+            } else {
+                Assert.assertTrue(boundyValueAttentionRepeatEvery.getText().equals("The value have not to be more than 999."));
+            }
+        } else {
+            System.out.println(afterOccurenceLocator.getAttribute("value"));
+            Assert.assertTrue(Integer.parseInt(afterOccurenceLocator.getAttribute("value")) == val);
+        }
+    }
 
 
 
